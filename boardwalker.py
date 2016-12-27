@@ -42,7 +42,6 @@ BOXCOLOR = BROWN
 HIGHLIGHTCOLOR = ORANGE
 TEXTCOLOR = WHITE
 
-
 ALLCOLORS = (BROWN, RED, GREEN, BLUE, YELLOW, ORANGE, PURPLE, CYAN)
 
 
@@ -55,8 +54,6 @@ def main():
 ##    pygame.mixer.music.play(-1, 0.0)
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))#, pygame.FULLSCREEN)
-
-
 
     mousex = 0 # used to store x coordinate of mouse event
     mousey = 0 # used to store y coordinate of mouse event
@@ -171,7 +168,7 @@ def main():
                 if abs(ninjaPosition[0]-boxx) <2 and abs(ninjaPosition[1]-boxy) <2 and (boxx,boxy) not in obstacleLocations:
                     ninjaPosition = [boxx,boxy] # set new ninja position
                     keyPressed = True
-                    moveCat(keyPressed, catPosition)
+                    moveCat(catPosition)
                     keyPressed = False
                     drawBoard(mainBoard, tileBoolean, ninjaPosition, catPosition, obstacleLocations)
             drawHighlightBox(boxx, boxy)
@@ -209,8 +206,7 @@ def manageCatPositions(catPosition):
 def moveCat(position):
     directions = ['N','NE','SE','S','SW','NW']
  #   if keyPressed == True:
-    random.shuffle(directions)
-    randomMove = directions[0]
+    randomMove = random.choice(directions)
 
     if randomMove == 'S' and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2:
         position[1] += 1
