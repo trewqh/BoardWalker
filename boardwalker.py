@@ -1,6 +1,6 @@
 #! python3
 # Board Walker
-#testujemy połączenie z githubem
+
 # Released under a "Simplified BSD" license
 
 import random, pygame, sys, os
