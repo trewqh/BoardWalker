@@ -9,7 +9,6 @@ from pygame.locals import *
 FPS = 900 # frames per second, the general speed of the program
 WINDOWWIDTH = 1660 # size of window's width in pixels
 WINDOWHEIGHT = 830 # size of windows' height in pixels
-REVEALSPEED = 24 # speed boxes' sliding reveals and covers
 BOXSIZE = 40 # size of box height & width in pixels
 GAPSIZE = 2 # size of gap between boxes in pixels
 BOARDWIDTH  = 22 # number of columns of icons
@@ -17,7 +16,7 @@ BOARDHEIGHT = 13 # number of rows of icons
 BASICFONTSIZE = 20
 OBSTACLESNUMBER = int(round(BOARDHEIGHT*BOARDWIDTH/3))
 CATQTY = 6
-VISIBLERANGE = 4
+VISIBLERANGE = 22
 
 XMARGIN = int((WINDOWWIDTH - (BOARDWIDTH * (BOXSIZE + GAPSIZE))) / 2)
 YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * (BOXSIZE + GAPSIZE))) / 2)
@@ -74,10 +73,7 @@ def main():
     pygame.display.set_caption('Board Walker - Texas Ninja Ranger')
 
     keyPressed = False 
-    mainBoard = 0
     tileBoolean = generateTileBooleanData(False)
-    
-
 
     DISPLAYSURF.fill(BGCOLOR)
 
@@ -86,7 +82,7 @@ def main():
         mouseClicked = False
 
         DISPLAYSURF.fill(BGCOLOR) # drawing the window
-        drawBoard(mainBoard, tileBoolean, ninjaPosition, catPosition, obstacleLocations)
+        drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
 
         event = pygame.event.wait() # event handling loop
         if event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE):
@@ -164,9 +160,9 @@ def main():
                 if abs(ninjaPosition[0]-boxx) <2 and abs(ninjaPosition[1]-boxy) <2 and (boxx,boxy) not in obstacleLocations:
                     ninjaPosition = [boxx,boxy] # set new ninja position
                     keyPressed = True
-                    moveCat(catPosition)
+                    manageCatPositions(catPosition, obstacleLocations)
                     keyPressed = False
-                    drawBoard(mainBoard, tileBoolean, ninjaPosition, catPosition, obstacleLocations)
+                    drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
             drawHighlightBox(boxx, boxy)
             
         # Redraw the screen and wait a clock tick.
@@ -180,7 +176,7 @@ def main():
 
         if len(catPosition) == 3:
             BOXCOLOR = CYAN
-            drawBoard(mainBoard, tileBoolean, ninjaPosition, catPosition, obstacleLocations)
+            drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
             pygame.display.update()
 ##            pygame.time.wait(1000)
 ##            FPSCLOCK.tick(FPS)
@@ -194,12 +190,14 @@ def main():
 def manageCatPositions(catPosition, obstacleLocations):
     newCatPosition = []
     while (newCatPosition == [] or any(newCatPosition.count(x) > 1 for x in newCatPosition)):
+        newCatPosition = []
         for cat in range(len(catPosition)):
             movedCat = moveCat(catPosition[cat])
             while movedCat in obstacleLocations:
                 movedCat = moveCat(catPosition[cat])
             newCatPosition.append(movedCat)
     catPosition = newCatPosition
+    print(catPosition)
         
 
 def moveCat(position):
@@ -280,7 +278,7 @@ def getBoxAtPixel(x, y):
                 return (boxx, boxy)
     return (None, None)
 
-def drawBoard(board, booleanProperty, ninjaPosition, catPosition, obstacleLocations, hexOffsetUp=0, hexOffsetDown=0):
+def drawBoard(booleanProperty, ninjaPosition, catPosition, obstacleLocations, hexOffsetUp=0, hexOffsetDown=0):
     
     ninjaImg = pygame.image.load('ninja40.png')
     catImg = pygame.image.load('cat40.png')
@@ -312,7 +310,7 @@ def drawBoard(board, booleanProperty, ninjaPosition, catPosition, obstacleLocati
             
                     
     # draws text and controls section
-    kotmowi = "You need to catch " + str(len(catPosition)-3) + " more cats."
+    kotmowi = "You need to catch " + str(catPosition) + str(len(catPosition)-3) + " more cats."
     CONTROLS1_SURF, CONTROLS1_RECT = makeText(kotmowi, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0)                
     DISPLAYSURF.blit(CONTROLS1_SURF, CONTROLS1_RECT)
 ##    DISPLAYSURF.blit(CONTROLS2_SURF, CONTROLS2_RECT)
