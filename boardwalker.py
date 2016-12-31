@@ -113,7 +113,7 @@ def main():
             ninjaPosition[1] += 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[1] -= 1
-            manageCatPositions(catPosition)
+            manageCatPositions(catPosition, obstacleLocations)
             
 ##        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_KP4):
 ##            ninjaPosition[0] -= 1
@@ -122,40 +122,35 @@ def main():
             ninjaPosition[1] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[1] += 1
-            manageCatPositions(catPosition)
+            manageCatPositions(catPosition, obstacleLocations)
             
         if event.type == KEYDOWN and event.key == K_KP7:
             ninjaPosition[0] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] += 1
-            manageCatPositions(catPosition)
+            manageCatPositions(catPosition, obstacleLocations)
     
         if event.type == KEYDOWN and event.key == K_KP9:
             ninjaPosition[0] += 1
             ninjaPosition[1] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] -= 1
-                ninjaPosition[1] += 1
-                
-            manageCatPositions(catPosition)
+                ninjaPosition[1] += 1              
+            manageCatPositions(catPosition, obstacleLocations)
             
         if event.type == KEYDOWN and event.key == K_KP1:
             ninjaPosition[0] -= 1
-            ninjaPosition[1] += 1
-            
+            ninjaPosition[1] += 1            
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] += 1
-                ninjaPosition[1] -= 1
-            
-            manageCatPositions(catPosition)
+                ninjaPosition[1] -= 1            
+            manageCatPositions(catPosition, obstacleLocations)
             
         if event.type == KEYDOWN and event.key == K_KP3:
-            ninjaPosition[0] += 1
-            
+            ninjaPosition[0] += 1            
             if ninjaPosition in obstacleLocations:
-                ninjaPosition[0] -= 1
-            
-            manageCatPositions(catPosition)
+                ninjaPosition[0] -= 1            
+            manageCatPositions(catPosition, obstacleLocations)
                 
         if event.type == KEYUP:
             keyPressed = False
@@ -195,10 +190,12 @@ def main():
             sys.exit()
 
 
-def manageCatPositions(catPosition):
+def manageCatPositions(catPosition, obstacleLocations):
     for cat in range(len(catPosition)):
         firstCat = catPosition[0]
         movedCat = moveCat(firstCat)
+        while movedCat in obstacleLocations:
+            movedCat = moveCat(firstCat)
         catPosition.append(movedCat)
         catPosition.pop(0)
         
@@ -233,6 +230,7 @@ def getCharacterPosition(obstacleLocations):
     while characterPosition in obstacleLocations:
         characterPosition = [random.randint(0,BOARDWIDTH-1),random.randint(0,BOARDHEIGHT-1)]
     return characterPosition
+
 
 def convertOffsetToAxial(coordinates):
     x = coordinates[0]
@@ -312,7 +310,7 @@ def drawBoard(board, booleanProperty, ninjaPosition, catPosition, obstacleLocati
             
                     
     # draws text and controls section
-    kotmowi = "You need to catch " + str(catPosition) + str(len(catPosition)-3) + " more cats."
+    kotmowi = "You need to catch " + str(len(catPosition)-3) + " more cats."
     CONTROLS1_SURF, CONTROLS1_RECT = makeText(kotmowi, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0)                
     DISPLAYSURF.blit(CONTROLS1_SURF, CONTROLS1_RECT)
 ##    DISPLAYSURF.blit(CONTROLS2_SURF, CONTROLS2_RECT)
