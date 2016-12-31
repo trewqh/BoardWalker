@@ -65,6 +65,7 @@ def main():
     catPosition = []
     for cat in range(0, CATQTY):
         catPosition.append(getCharacterPosition(obstacleLocations))
+    manageCatPositions(catPosition, obstacleLocations)
 
     kotmowi = ""
         
@@ -191,13 +192,14 @@ def main():
 
 
 def manageCatPositions(catPosition, obstacleLocations):
-    for cat in range(len(catPosition)):
-        firstCat = catPosition[0]
-        movedCat = moveCat(firstCat)
-        while movedCat in obstacleLocations:
-            movedCat = moveCat(firstCat)
-        catPosition.append(movedCat)
-        catPosition.pop(0)
+    newCatPosition = []
+    while (newCatPosition == [] or any(newCatPosition.count(x) > 1 for x in newCatPosition)):
+        for cat in range(len(catPosition)):
+            movedCat = moveCat(catPosition[cat])
+            while movedCat in obstacleLocations:
+                movedCat = moveCat(catPosition[cat])
+            newCatPosition.append(movedCat)
+    catPosition = newCatPosition
         
 
 def moveCat(position):
