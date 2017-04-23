@@ -66,10 +66,10 @@ def main():
         catPosition.append(getCharacterPosition(obstacleLocations))
     manageCatPositions(catPosition, obstacleLocations)
 
-    kotmowi = ""
+    textToDisplay = ""
         
     BASICFONT = pygame.font.Font('freesansbold.ttf', BASICFONTSIZE)
-    CONTROLS1_SURF, CONTROLS1_RECT = makeText(kotmowi, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0 )
+    CONTROLS1_SURF, CONTROLS1_RECT = makeText(textToDisplay, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0 )
     pygame.display.set_caption('Board Walker - Texas Ninja Ranger')
 
     keyPressed = False 
@@ -189,38 +189,39 @@ def main():
 
 def manageCatPositions(catPosition, obstacleLocations):
     newCatPosition = []
+    
     while (newCatPosition == [] or any(newCatPosition.count(x) > 1 for x in newCatPosition)):
         newCatPosition = []
         for cat in range(len(catPosition)):
-            movedCat = moveCat(catPosition[cat])
-            while movedCat in obstacleLocations:
-                movedCat = moveCat(catPosition[cat])
+            movedCat = moveCat(catPosition[cat], obstacleLocations)
+            #while movedCat in obstacleLocations:
+            #    movedCat = moveCat(catPosition[cat])
+            print(catPosition)
             newCatPosition.append(movedCat)
-    catPosition = newCatPosition
-    print(catPosition)
+
+    #catPosition = newCatPosition
         
 
-def moveCat(position):
+def moveCat(position, obstacleLocations):
     directions = ['N','NE','SE','S','SW','NW']
  #   if keyPressed == True:
     randomMove = random.choice(directions)
-
-    if randomMove == 'S' and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2:
+    print(randomMove)
+    if randomMove == 'S' and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2 and [position[0],position[1]+1] not in obstacleLocations:
         position[1] += 1
-    if randomMove == 'N' and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1:
+    if randomMove == 'N' and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1 and [position[0],position[1]-1] not in obstacleLocations:
         position[1] -= 1
-    if randomMove == 'NW'and position[0]-1 > -1 and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1:
+    if randomMove == 'NW'and position[0]-1 > -1 and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1 and [position[0]-1,position[1]] not in obstacleLocations:
         position[0] -= 1
-    if randomMove == 'NE' and position[0] <= BOARDWIDTH-2 and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1:
+    if randomMove == 'NE' and position[0] <= BOARDWIDTH-2 and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1 and [position[0]+1,position[1]-1] not in obstacleLocations:
         position[0] += 1
         position[1] -= 1
-    if randomMove == 'SW' and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2 and position[0]-1 > -1:
+    if randomMove == 'SW' and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2 and position[0]-1 > -1 and [position[0]-1,position[1]+1] not in obstacleLocations:
         position[0] -= 1
         position[1] += 1
-    if randomMove == 'SE' and position[0] <= BOARDWIDTH-2 and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2:
+    if randomMove == 'SE' and position[0] <= BOARDWIDTH-2 and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2 and [position[0]+1,position[1]] not in obstacleLocations:
         position[0] += 1
     keyPressed = False
-    
     return position
 
 
@@ -310,8 +311,8 @@ def drawBoard(booleanProperty, ninjaPosition, catPosition, obstacleLocations, he
             
                     
     # draws text and controls section
-    kotmowi = "You need to catch " + str(catPosition) + str(len(catPosition)-3) + " more cats."
-    CONTROLS1_SURF, CONTROLS1_RECT = makeText(kotmowi, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0)                
+    textToDisplay = "You need to catch " + str(catPosition) + str(len(catPosition)-3) + " more cats."
+    CONTROLS1_SURF, CONTROLS1_RECT = makeText(textToDisplay, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0)                
     DISPLAYSURF.blit(CONTROLS1_SURF, CONTROLS1_RECT)
 ##    DISPLAYSURF.blit(CONTROLS2_SURF, CONTROLS2_RECT)
 ##    DISPLAYSURF.blit(CONTROLS3_SURF, CONTROLS3_RECT)
