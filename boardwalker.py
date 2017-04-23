@@ -194,12 +194,8 @@ def manageCatPositions(catPosition, obstacleLocations):
         newCatPosition = []
         for cat in range(len(catPosition)):
             movedCat = moveCat(catPosition[cat], obstacleLocations)
-            #while movedCat in obstacleLocations:
-            #    movedCat = moveCat(catPosition[cat])
             print(catPosition)
             newCatPosition.append(movedCat)
-
-    #catPosition = newCatPosition
         
 
 def moveCat(position, obstacleLocations):
