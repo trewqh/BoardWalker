@@ -1,9 +1,7 @@
 #! python3
 # Board Walker
 
-# Released under a "Simplified BSD" license
-
-import random, pygame, sys, os
+import random, pygame, sys, os, time
 from pygame.locals import *
 
 FPS = 900 # frames per second, the general speed of the program
@@ -16,7 +14,9 @@ BOARDHEIGHT = 13 # number of rows of icons
 BASICFONTSIZE = 20
 OBSTACLESNUMBER = int(round(BOARDHEIGHT*BOARDWIDTH/3))
 CATQTY = 6
-VISIBLERANGE = 22
+CATSTOCATCH = 3
+VISIBLERANGE = 2
+MUSICVOLUME = 0
 
 XMARGIN = int((WINDOWWIDTH - (BOARDWIDTH * (BOXSIZE + GAPSIZE))) / 2)
 YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * (BOXSIZE + GAPSIZE))) / 2)
@@ -46,14 +46,15 @@ ALLCOLORS = (BROWN, RED, GREEN, BLUE, YELLOW, ORANGE, PURPLE, CYAN)
 
 def main():
     
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, CONTROLS1_SURF, CONTROLS1_RECT, CONTROLS2_SURF, CONTROLS2_RECT, CONTROLS3_SURF, CONTROLS3_RECT
+    global FPSCLOCK, DISPLAYSURF, BASICFONT, CONTROLS1_SURF, CONTROLS1_RECT, CONTROLS2_SURF, CONTROLS2_RECT, CONTROLS3_SURF, CONTROLS3_RECT, MUSICVOLUME
+    MUSICVOLUME = 0
     pygame.init()
-##    pygame.mixer.music.load('loop22.wav')
-##    pygame.mixer.music.set_volume(0.4)
-##    pygame.mixer.music.play(-1, 0.0)
+    pygame.mixer.music.load('loop22.wav')
+    pygame.mixer.music.set_volume(MUSICVOLUME)
+    pygame.mixer.music.play(-1, 0.0)
     FPSCLOCK = pygame.time.Clock()
-    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))#, pygame.FULLSCREEN)
-
+    DISPLAYSURF = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))#, pygame.FULLSCREEN | pygame.HWSURFACE | pygame.DOUBLEBUF)
+    
     mousex = 0 # used to store x coordinate of mouse event
     mousey = 0 # used to store y coordinate of mouse event
 
@@ -106,11 +107,16 @@ def main():
 ##        if event.type == KEYDOWN and (event.key == K_RIGHT or event.key == K_KP6):
 ##            ninjaPosition[0] += 1
 
+        #if event.type == KEYDOWN and (event.key == K_m):
+        #    MUSICVOLUME = 0.4
+
         if event.type == KEYDOWN and (event.key == K_DOWN or event.key == K_KP2):
             ninjaPosition[1] += 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[1] -= 1
+            eliminateCaughtCats(catPosition, ninjaPosition)
             manageCatPositions(catPosition, obstacleLocations)
+            eliminateCaughtCats(catPosition, ninjaPosition)
             
 ##        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_KP4):
 ##            ninjaPosition[0] -= 1
@@ -119,73 +125,85 @@ def main():
             ninjaPosition[1] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[1] += 1
+            eliminateCaughtCats(catPosition, ninjaPosition)
             manageCatPositions(catPosition, obstacleLocations)
-            
+            eliminateCaughtCats(catPosition, ninjaPosition)
+                       
         if event.type == KEYDOWN and event.key == K_KP7:
             ninjaPosition[0] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] += 1
+            eliminateCaughtCats(catPosition, ninjaPosition)
             manageCatPositions(catPosition, obstacleLocations)
-    
+            eliminateCaughtCats(catPosition, ninjaPosition)
+                
         if event.type == KEYDOWN and event.key == K_KP9:
             ninjaPosition[0] += 1
             ninjaPosition[1] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] -= 1
                 ninjaPosition[1] += 1              
+            eliminateCaughtCats(catPosition, ninjaPosition)
             manageCatPositions(catPosition, obstacleLocations)
-            
+            eliminateCaughtCats(catPosition, ninjaPosition)
+                        
         if event.type == KEYDOWN and event.key == K_KP1:
             ninjaPosition[0] -= 1
             ninjaPosition[1] += 1            
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] += 1
                 ninjaPosition[1] -= 1            
+            eliminateCaughtCats(catPosition, ninjaPosition)
             manageCatPositions(catPosition, obstacleLocations)
-            
+            eliminateCaughtCats(catPosition, ninjaPosition)
+                        
         if event.type == KEYDOWN and event.key == K_KP3:
             ninjaPosition[0] += 1            
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] -= 1            
+            eliminateCaughtCats(catPosition, ninjaPosition)
             manageCatPositions(catPosition, obstacleLocations)
-                
+            eliminateCaughtCats(catPosition, ninjaPosition)
+                            
         if event.type == KEYUP:
             keyPressed = False
+
 ##            
 ## mouse movement
-        boxx, boxy = getBoxAtPixel(mousex, mousey)
-        if boxx != None and boxy != None:
-            # The mouse is currently over a box.
-            if mouseClicked:
-                if abs(ninjaPosition[0]-boxx) <2 and abs(ninjaPosition[1]-boxy) <2 and (boxx,boxy) not in obstacleLocations:
-                    ninjaPosition = [boxx,boxy] # set new ninja position
-                    keyPressed = True
-                    manageCatPositions(catPosition, obstacleLocations)
-                    keyPressed = False
-                    drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
-            drawHighlightBox(boxx, boxy)
+        #boxx, boxy = getBoxAtPixel(mousex, mousey)
+        #if boxx != None and boxy != None:
+        #    # The mouse is currently over a box.
+        #    if mouseClicked:
+        #        if abs(ninjaPosition[0]-boxx) <2 and abs(ninjaPosition[1]-boxy) <2 and (boxx,boxy) not in obstacleLocations:
+        #            ninjaPosition = [boxx,boxy] # set new ninja position
+        #            keyPressed = True
+        #            manageCatPositions(catPosition, obstacleLocations)
+        #            keyPressed = False
+        #            drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
+        #    drawHighlightBox(boxx, boxy)
             
-        # Redraw the screen and wait a clock tick.
+        ## Redraw the screen and wait a clock tick.
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
-        for cat in range(len(catPosition)):
-            if catPosition[cat] == ninjaPosition:
-                catPosition.pop(cat)
-                break
-
-        if len(catPosition) == 3:
+        if len(catPosition) == CATQTY - CATSTOCATCH:
             BOXCOLOR = CYAN
             drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
             pygame.display.update()
-##            pygame.time.wait(1000)
-##            FPSCLOCK.tick(FPS)
+            pygame.time.wait(1000)
+            FPSCLOCK.tick(FPS)
     
             pygame.quit()
-##            import catanimation
-##            os.system("catanimation.py")
+            #import catanimation
+            #os.system("catanimation.py")
             sys.exit()
 
+
+def eliminateCaughtCats(catPosition, ninjaPosition):
+    for cat in range(len(catPosition)):
+        if catPosition[cat] == ninjaPosition:
+            catPosition.pop(cat)
+            break           
 
 def manageCatPositions(catPosition, obstacleLocations):
     newCatPosition = []
@@ -294,7 +312,7 @@ def drawBoard(booleanProperty, ninjaPosition, catPosition, obstacleLocations, he
                 pygame.draw.rect(DISPLAYSURF, BOXCOLOR, (left, top, BOXSIZE, BOXSIZE))
             else:
                 pygame.draw.rect(DISPLAYSURF, BLACK, (left, top, BOXSIZE, BOXSIZE))
-            
+
             if [boxx,boxy] in obstacleLocations:
                     DISPLAYSURF.blit(wallImg, (left, top), special_flags=BLEND_MULT)
                             
@@ -307,7 +325,7 @@ def drawBoard(booleanProperty, ninjaPosition, catPosition, obstacleLocations, he
             
                     
     # draws text and controls section
-    textToDisplay = "You need to catch " + str(catPosition) + str(len(catPosition)-3) + " more cats."
+    textToDisplay = "You need to catch " + str(len(catPosition)-CATSTOCATCH) + " more cats."
     CONTROLS1_SURF, CONTROLS1_RECT = makeText(textToDisplay, TEXTCOLOR, BGCOLOR, 120, 90+BASICFONTSIZE*0)                
     DISPLAYSURF.blit(CONTROLS1_SURF, CONTROLS1_RECT)
 ##    DISPLAYSURF.blit(CONTROLS2_SURF, CONTROLS2_RECT)
