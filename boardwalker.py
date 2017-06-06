@@ -1,7 +1,7 @@
 #! python3
 # Board Walker
 
-import random, pygame, sys, os, time
+import random, pygame, sys, os
 from pygame.locals import *
 
 FPS = 900 # frames per second, the general speed of the program
@@ -13,8 +13,8 @@ BOARDWIDTH  = 22 # number of columns of icons
 BOARDHEIGHT = 13 # number of rows of icons
 BASICFONTSIZE = 20
 OBSTACLESNUMBER = int(round(BOARDHEIGHT*BOARDWIDTH/3))
-CATQTY = 6
-CATSTOCATCH = 3
+CATQTY = int(round(BOARDHEIGHT*BOARDWIDTH/35))
+CATSTOCATCH = int(round(CATQTY/2))
 VISIBLERANGE = 2
 MUSICVOLUME = 0
 
@@ -103,72 +103,58 @@ def main():
 
 ##  keyboard movement
 
-        
-##        if event.type == KEYDOWN and (event.key == K_RIGHT or event.key == K_KP6):
-##            ninjaPosition[0] += 1
-
         #if event.type == KEYDOWN and (event.key == K_m):
         #    MUSICVOLUME = 0.4
 
         if event.type == KEYDOWN and (event.key == K_DOWN or event.key == K_KP2):
-            ninjaPosition[1] += 1
+            if ninjaPosition[1] + (ninjaPosition[0] + (ninjaPosition[0]&1)) / 2 <= BOARDHEIGHT-2:
+                ninjaPosition[1] += 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[1] -= 1
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            manageCatPositions(catPosition, obstacleLocations)
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            
-##        if event.type == KEYDOWN and (event.key == K_LEFT or event.key == K_KP4):
-##            ninjaPosition[0] -= 1
+            resolveMove(catPosition, ninjaPosition, obstacleLocations)
         
         if event.type == KEYDOWN and (event.key == K_UP or event.key == K_KP8):
-            ninjaPosition[1] -= 1
+            if ninjaPosition[1]-1 + (ninjaPosition[0] + (ninjaPosition[0]&1)) / 2 > -1:
+                ninjaPosition[1] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[1] += 1
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            manageCatPositions(catPosition, obstacleLocations)
-            eliminateCaughtCats(catPosition, ninjaPosition)
+            resolveMove(catPosition, ninjaPosition, obstacleLocations)
                        
         if event.type == KEYDOWN and event.key == K_KP7:
-            ninjaPosition[0] -= 1
+            if ninjaPosition[0]-1 > -1 and ninjaPosition[1]-1 + (ninjaPosition[0] + (1+ninjaPosition[0]&1)) / 2 > -1:
+                ninjaPosition[0] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] += 1
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            manageCatPositions(catPosition, obstacleLocations)
-            eliminateCaughtCats(catPosition, ninjaPosition)
+            resolveMove(catPosition, ninjaPosition, obstacleLocations)
                 
         if event.type == KEYDOWN and event.key == K_KP9:
-            ninjaPosition[0] += 1
-            ninjaPosition[1] -= 1
+            if ninjaPosition[0] <= BOARDWIDTH-2 and ninjaPosition[1]-1 + (ninjaPosition[0] + (1+ninjaPosition[0]&1)) / 2 > -1:
+                ninjaPosition[0] += 1
+                ninjaPosition[1] -= 1
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] -= 1
                 ninjaPosition[1] += 1              
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            manageCatPositions(catPosition, obstacleLocations)
-            eliminateCaughtCats(catPosition, ninjaPosition)
+            resolveMove(catPosition, ninjaPosition, obstacleLocations)
                         
         if event.type == KEYDOWN and event.key == K_KP1:
-            ninjaPosition[0] -= 1
-            ninjaPosition[1] += 1            
+            if ninjaPosition[1] + (ninjaPosition[0] + (1+ninjaPosition[0]&1)) / 2 <= BOARDHEIGHT-1 and ninjaPosition[0]-1 > -1:
+                ninjaPosition[0] -= 1
+                ninjaPosition[1] += 1            
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] += 1
                 ninjaPosition[1] -= 1            
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            manageCatPositions(catPosition, obstacleLocations)
-            eliminateCaughtCats(catPosition, ninjaPosition)
+            resolveMove(catPosition, ninjaPosition, obstacleLocations)
                         
         if event.type == KEYDOWN and event.key == K_KP3:
-            ninjaPosition[0] += 1            
+            if ninjaPosition[0] <= BOARDWIDTH-2 and ninjaPosition[1] + (ninjaPosition[0] + (1+ninjaPosition[0]&1)) / 2 <= BOARDHEIGHT-1:
+                ninjaPosition[0] += 1            
             if ninjaPosition in obstacleLocations:
                 ninjaPosition[0] -= 1            
-            eliminateCaughtCats(catPosition, ninjaPosition)
-            manageCatPositions(catPosition, obstacleLocations)
-            eliminateCaughtCats(catPosition, ninjaPosition)
+            resolveMove(catPosition, ninjaPosition, obstacleLocations)
                             
         if event.type == KEYUP:
             keyPressed = False
 
-##            
 ## mouse movement
         #boxx, boxy = getBoxAtPixel(mousex, mousey)
         #if boxx != None and boxy != None:
@@ -182,7 +168,7 @@ def main():
         #            drawBoard(tileBoolean, ninjaPosition, catPosition, obstacleLocations)
         #    drawHighlightBox(boxx, boxy)
             
-        ## Redraw the screen and wait a clock tick.
+## Redraw the screen and wait a clock tick.
         pygame.display.update()
         FPSCLOCK.tick(FPS)
 
@@ -198,6 +184,10 @@ def main():
             #os.system("catanimation.py")
             sys.exit()
 
+def resolveMove(catPosition, ninjaPosition, obstacleLocations):
+    eliminateCaughtCats(catPosition, ninjaPosition)
+    manageCatPositions(catPosition, obstacleLocations)
+    eliminateCaughtCats(catPosition, ninjaPosition)
 
 def eliminateCaughtCats(catPosition, ninjaPosition):
     for cat in range(len(catPosition)):
@@ -212,7 +202,6 @@ def manageCatPositions(catPosition, obstacleLocations):
         newCatPosition = []
         for cat in range(len(catPosition)):
             movedCat = moveCat(catPosition[cat], obstacleLocations)
-            print(catPosition)
             newCatPosition.append(movedCat)
         
 
@@ -220,7 +209,6 @@ def moveCat(position, obstacleLocations):
     directions = ['N','NE','SE','S','SW','NW']
  #   if keyPressed == True:
     randomMove = random.choice(directions)
-    print(randomMove)
     if randomMove == 'S' and position[1] + (position[0] + (position[0]&1)) / 2 <= BOARDHEIGHT-2 and [position[0],position[1]+1] not in obstacleLocations:
         position[1] += 1
     if randomMove == 'N' and position[1]-1 + (position[0] + (position[0]&1)) / 2 > -1 and [position[0],position[1]-1] not in obstacleLocations:
@@ -263,7 +251,7 @@ def makeObstacles():
 
 
 def makeText(text, color, bgcolor, top, left):
-# create the Surface and Rect objects for some text.
+    # create the Surface and Rect objects for some text.
     textSurf = BASICFONT.render(text, True, color, bgcolor)
     textRect = textSurf.get_rect()
     textRect.topleft = (top, left)
