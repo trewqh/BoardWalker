@@ -16,7 +16,6 @@ OBSTACLESNUMBER = int(round(BOARDHEIGHT*BOARDWIDTH/3))
 CATQTY = int(round(BOARDHEIGHT*BOARDWIDTH/35))
 CATSTOCATCH = int(round(CATQTY/2))
 VISIBLERANGE = 2
-MUSICVOLUME = 0
 
 XMARGIN = int((WINDOWWIDTH - (BOARDWIDTH * (BOXSIZE + GAPSIZE))) / 2)
 YMARGIN = int((WINDOWHEIGHT - (BOARDHEIGHT * (BOXSIZE + GAPSIZE))) / 2)
@@ -47,9 +46,9 @@ ALLCOLORS = (BROWN, RED, GREEN, BLUE, YELLOW, ORANGE, PURPLE, CYAN)
 def main():
     
     global FPSCLOCK, DISPLAYSURF, BASICFONT, CONTROLS1_SURF, CONTROLS1_RECT, CONTROLS2_SURF, CONTROLS2_RECT, CONTROLS3_SURF, CONTROLS3_RECT, MUSICVOLUME
-    MUSICVOLUME = 0
+    MUSICVOLUME = 0.4
     pygame.init()
-    pygame.mixer.music.load('loop22.wav')
+    pygame.mixer.music.load('loop.wav')
     pygame.mixer.music.set_volume(MUSICVOLUME)
     pygame.mixer.music.play(-1, 0.0)
     FPSCLOCK = pygame.time.Clock()
@@ -103,8 +102,8 @@ def main():
 
 ##  keyboard movement
 
-        #if event.type == KEYDOWN and (event.key == K_m):
-        #    MUSICVOLUME = 0.4
+        if event.type == KEYDOWN and (event.key == K_m):
+            MUSICVOLUME = 0.0
 
         if event.type == KEYDOWN and (event.key == K_DOWN or event.key == K_KP2):
             if ninjaPosition[1] + (ninjaPosition[0] + (ninjaPosition[0]&1)) / 2 <= BOARDHEIGHT-2:
@@ -180,7 +179,7 @@ def main():
             FPSCLOCK.tick(FPS)
     
             pygame.quit()
-            #import catanimation
+            import catanimation
             #os.system("catanimation.py")
             sys.exit()
 

@@ -20,7 +20,7 @@ BLACK = (0,0,0)
 catImg = pygame.image.load('cat.png')
 motImg = pygame.image.load('mot.jpg')
 fontObj = pygame.font.Font('freesansbold.ttf', 32)
-textSurfaceObj = fontObj.render('Wygrywasz! Karolina dogoniła kota!', 1, BLUE, WHITE)
+textSurfaceObj = fontObj.render('Wygrywasz! Karolina dogoniła koty!', 1, BLUE, WHITE)
 #textRectObj = textSurfaceObj.get_rect()
 #textRectObj.center = (200, 150)
 catx = 10
@@ -30,16 +30,17 @@ direction = 'right'
 
 def music():
     i=0
-    while i<2:
+    while i<20:
         
         soundObj = pygame.mixer.Sound('loop2.wav')
         bassObj = pygame.mixer.Sound('bass.wav')
         soundObj.play()
         bassObj.play()
-        time.sleep(5.57) # wait and let the sound play for 1 second
+        time.sleep(5.57) # wait and let the sound play for the duration of the loop
         i += 1
 
 threadObj = threading.Thread(target=music)
+threadObj.daemon = True
 threadObj.start()
             
 while True: # the main game loop
@@ -74,7 +75,7 @@ while True: # the main game loop
 ##    time.sleep(5.57) # wait and let the sound play for 1 second
 
     for event in pygame.event.get():
-        if (event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE)) and not threadObj.is_alive():
+        if (event.type == QUIT or (event.type == KEYUP and event.key == K_ESCAPE)):# and not threadObj.is_alive():
             pygame.quit()
             os.system("boardwalker.py")
             sys.exit()
