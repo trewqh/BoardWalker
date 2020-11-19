@@ -3,6 +3,8 @@
 import pygame, sys, time, threading, os
 from pygame.locals import *
 
+MUSICVOLUME = 0.05
+
 pygame.init()
 
 FPS = 57 # frames per second setting
@@ -18,9 +20,9 @@ GREEN = (0, 255, 0)
 BLUE = (110, 110, 228)
 BLACK = (0,0,0)
 catImg = pygame.image.load('cat.png')
-motImg = pygame.image.load('mot.jpg')
+motImg = pygame.image.load('asia.jpg')
 fontObj = pygame.font.Font('freesansbold.ttf', 32)
-textSurfaceObj = fontObj.render('Wygrywasz! Karolina dogoniła koty!', 1, BLUE, WHITE)
+textSurfaceObj = fontObj.render('Wygrywasz! Asia dogoniła koty!', 1, BLUE, WHITE)
 #textRectObj = textSurfaceObj.get_rect()
 #textRectObj.center = (200, 150)
 catx = 10
@@ -34,6 +36,8 @@ def music():
         
         soundObj = pygame.mixer.Sound('loop2.wav')
         bassObj = pygame.mixer.Sound('bass.wav')
+        soundObj.set_volume(0.05)
+        bassObj.set_volume(0.05)
         soundObj.play()
         bassObj.play()
         time.sleep(5.57) # wait and let the sound play for the duration of the loop
